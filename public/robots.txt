@@ -1,0 +1,7 @@
+# robots.txt for https://therodrigo.com/
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /Appointment_Checker
+
+Sitemap: https://therodrigo.com/sitemap.xml

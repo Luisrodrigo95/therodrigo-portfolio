@@ -1,0 +1,36 @@
+# /etc/systemd/system/mcp-costalito.service
+# Persistent SSH Loopback Tunnel from Debian VPS (5.175.184.107) -> Costalito Windows VPS (5.175.184.234)
+# Forwards ports 9876, 9877, 9878 to cover DmPlugin's lazy rebind / port auto-increment behavior.
+#
+# Setup on Windows (5.175.184.234):
+#   1. Allow Debian VPS IP (5.175.184.107) on TCP port 22 in Windows Firewall.
+#   2. Append Debian's /root/.ssh/id_ed25519.pub to C:\ProgramData\ssh\administrators_authorized_keys
+#
+# Setup on Debian 13 (5.175.184.107):
+#   sudo cp /var/www/my-portfolio/scripts/mcp-costalito.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now mcp-costalito.service
+
+[Unit]
+Description=DarkBot DmPlugin MCP Bridge SSH Tunnel (Costalito 5.175.184.234)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/ssh -N \
+    -o StrictHostKeyChecking=accept-new \
+    -o BatchMode=yes \
+    -o ServerAliveInterval=20 \
+    -o ServerAliveCountMax=3 \
+    -o ExitOnForwardFailure=yes \
+    -L 127.0.0.1:9876:127.0.0.1:9876 \
+    -L 127.0.0.1:9877:127.0.0.1:9877 \
+    -L 127.0.0.1:9878:127.0.0.1:9878 \
+    Administrator@5.175.184.234
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

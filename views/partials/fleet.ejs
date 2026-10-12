@@ -1,0 +1,130 @@
+<section class="section" id="fleet" aria-labelledby="fleet-title">
+    <div class="section-head fleet-section-head">
+        <div>
+            <p class="section-kicker">02 · The Fleet</p>
+            <h2 id="fleet-title">VPS Fleet &amp; Live Telemetry</h2>
+            <p class="section-sub">Smokeping-style latency &amp; jitter telemetry straight from RRDtool — fed by a parallel cron collector probing every node.</p>
+            <p class="section-tag mono">[ NETWORK_MONITOR // PARALLEL_RRD_V2 // MULTI-RRA ]</p>
+        </div>
+
+        <!-- Improvement C & D: Interactive Time Window Selector + Parallel Collector Controls -->
+        <div class="rrd-toolbar" role="region" aria-label="Telemetry graph controls">
+            <div class="rrd-range-group" role="group" aria-label="Time window">
+                <span class="rrd-toolbar-label mono">WINDOW:</span>
+                <button type="button" class="rrd-range-btn mono" data-range="1h" aria-pressed="false">1H</button>
+                <button type="button" class="rrd-range-btn mono active" data-range="4h" aria-pressed="true">4H</button>
+                <button type="button" class="rrd-range-btn mono" data-range="24h" aria-pressed="false">24H</button>
+                <button type="button" class="rrd-range-btn mono" data-range="7d" aria-pressed="false">7D</button>
+            </div>
+            <button type="button" class="rrd-sync-btn mono" id="rrd-sync-btn" title="Refresh RRD graphs and live ping telemetry">
+                <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                <span id="rrd-sync-label">Sync</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Improvement B & D: Sub-ms Threshold Legend & Collector Pipeline Bar -->
+    <div class="rrd-pipeline-bar mono" aria-label="Telemetry pipeline metadata">
+        <div class="pipeline-left">
+            <span class="pipeline-pill"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Parallel ICMPv4 (60s step)</span>
+            <span class="pipeline-pill"><i class="fa-solid fa-database" aria-hidden="true"></i> RRA: 24h (1m) · 7d (15m) · 30d (1h)</span>
+        </div>
+        <div class="pipeline-thresholds">
+            <span class="thresh-item"><span class="thresh-dot thresh-ok"></span>&lt;0.85ms Nominal</span>
+            <span class="thresh-item"><span class="thresh-dot thresh-warn"></span>0.85–2.0ms Jitter</span>
+            <span class="thresh-item"><span class="thresh-dot thresh-bad"></span>&gt;2.0ms Spike</span>
+            <span class="thresh-item"><span class="thresh-band"></span>Smokeping Variance</span>
+        </div>
+    </div>
+
+    <div class="fleet-grid">
+        <% vpsFleet.forEach(server => { %>
+            <article class="card fleet-card <%= server.mcpEnabled ? 'fleet-card-mcp' : 'fleet-card-node' %>"
+                     data-fleet-card="<%= server.id %>"
+                     <% if (server.mcpEnabled) { %>
+                     data-mcp-node="<%= server.id %>"
+                     data-mcp-role="<%= server.role %>"
+                     data-mcp-enabled="true"
+                     tabindex="0"
+                     role="button"
+                     aria-label="Open console for <%= server.role %> (<%= server.id %>)"
+                     <% } %>>
+                <header class="fleet-header">
+                    <div class="fleet-identity">
+                        <h3 class="fleet-title">
+                            <i class="fa-brands <%= server.osClass %>" style="color: <%= server.color %>;" aria-hidden="true"></i>
+                            <span class="mono"><%= server.id %></span>
+                        </h3>
+                        <p class="fleet-role"><%= server.role %></p>
+                    </div>
+                    <div class="fleet-status-stack">
+                        <span class="badge badge-ok" title="Real measured RRD ICMP reachability">
+                            <span data-live-uptime="<%= server.id %>">--%</span> UPTIME
+                        </span>
+                        <!-- Improvement A: Live sub-ms RTT badge updated from /api/fleet/telemetry -->
+                        <span class="graph-ping mono" data-live-ping="<%= server.id %>" title="Live ICMP RTT from RRDtool">
+                            <span class="ping-live-dot"></span>
+                            <span class="ping-val">-- ms</span>
+                        </span>
+                    </div>
+                </header>
+
+                <div class="graph-box">
+                    <div class="graph-head">
+                        <span class="graph-label" data-graph-label="<%= server.id %>">Latency history (4h)</span>
+                    </div>
+                    <!-- Improvement E: HiDPI 600x160 Retina Graph + Theme-synced palette -->
+                    <div class="rrd-wrapper">
+                        <img class="real-rrd-graph"
+                             src="/api/graphs/latency/<%= server.id %>?range=4h"
+                             alt="Latency telemetry graph for <%= server.id %>"
+                             width="600" height="160"
+                             data-server="<%= server.id %>">
+                    </div>
+                    <!-- Improvement A & B: Live Smokeping Micro-Metrics Bar -->
+                    <div class="rrd-metrics-row mono" data-metrics-row="<%= server.id %>">
+                        <div class="rrd-metric">
+                            <span class="rrd-m-lbl">AVG</span>
+                            <span class="rrd-m-val" data-m-avg="<%= server.id %>">--</span>
+                        </div>
+                        <div class="rrd-metric">
+                            <span class="rrd-m-lbl">MIN</span>
+                            <span class="rrd-m-val" data-m-min="<%= server.id %>">--</span>
+                        </div>
+                        <div class="rrd-metric">
+                            <span class="rrd-m-lbl">MAX</span>
+                            <span class="rrd-m-val" data-m-max="<%= server.id %>">--</span>
+                        </div>
+                        <div class="rrd-metric">
+                            <span class="rrd-m-lbl">JITTER</span>
+                            <span class="rrd-m-val" data-m-jitter="<%= server.id %>">--</span>
+                        </div>
+                        <div class="rrd-metric">
+                            <span class="rrd-m-lbl">LOSS</span>
+                            <span class="rrd-m-val rrd-m-ok" data-m-loss="<%= server.id %>">0.0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="fleet-footer mono">
+                    <span>OS: <%= server.type %></span>
+                    <% if (server.mcpEnabled) { %>
+                        <div class="fleet-footer-right">
+                            <span title="Continuous telemetry tracking duration"><span data-live-days="<%= server.id %>">--</span>d tracked</span>
+                            <button type="button"
+                                    class="fleet-console-btn mono fleet-console-btn-live"
+                                    data-open-mcp="<%= server.id %>"
+                                    aria-label="Open Console for <%= server.role %>">
+                                <i class="fa-solid fa-terminal" aria-hidden="true"></i>
+                                <span>Console</span>
+                            </button>
+                        </div>
+                    <% } else { %>
+                        <span title="Continuous telemetry tracking duration"><span data-live-days="<%= server.id %>">--</span> days tracked</span>
+                    <% } %>
+                </footer>
+            </article>
+        <% }) %>
+    </div>
+
+</section>

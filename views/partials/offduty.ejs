@@ -1,0 +1,150 @@
+<section class="section" id="offduty" aria-labelledby="offduty-title">
+    <div class="section-head fleet-section-head">
+        <div>
+            <p class="section-kicker">06 · Security &amp; Daemon Telemetry</p>
+            <h2 id="offduty-title">Edge Perimeter, PM2 Supervisor &amp; Live CVE Radar</h2>
+            <p class="section-sub">Pure server &amp; security telemetry — live Cloudflare Edge trace, local PM2 &amp; systemd daemon supervision on Debian 13, and CISA KEV vulnerability intelligence.</p>
+            <p class="section-tag mono">[ SECOPS_TELEMETRY // CF_EDGE_TRACE // PM2_JLIST // CISA_KEV_FEED ]</p>
+        </div>
+
+        <div class="rrd-toolbar" role="region" aria-label="Security telemetry controls">
+            <span class="badge badge-ok mono" id="secops-global-badge" title="Security and daemon telemetry status">
+                <span class="ping-live-dot"></span>
+                <span id="secops-global-status">SECOPS LIVE</span>
+            </span>
+            <button type="button" class="rrd-sync-btn mono" id="secops-sync-btn" title="Refresh Cloudflare trace, PM2 process list and CVE radar">
+                <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                <span id="secops-sync-label">Sync SecOps</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Top 2-Column Telemetry Grid: Cloudflare Edge + Local PM2 Supervisor -->
+    <div class="secops-top-grid">
+        <!-- Module 1: Cloudflare Edge & Network Perimeter -->
+        <article class="card secops-card accent-top" aria-labelledby="cf-card-title">
+            <header class="secops-card-head">
+                <h3 id="cf-card-title">
+                    <i class="fa-solid fa-cloud-bolt" aria-hidden="true"></i>
+                    <span>Cloudflare Edge &amp; Perimeter</span>
+                </h3>
+                <span class="badge badge-ok mono" id="cf-status-badge">TLSv1.3 · ACTIVE</span>
+            </header>
+
+            <div class="secops-kpi-grid mono">
+                <div class="secops-kpi">
+                    <span class="secops-kpi-lbl">VISITOR POP</span>
+                    <strong class="secops-kpi-val" id="cf-kpi-visitor">--</strong>
+                </div>
+                <div class="secops-kpi">
+                    <span class="secops-kpi-lbl">VPS EDGE POP</span>
+                    <strong class="secops-kpi-val" id="cf-kpi-vps">LAX (US)</strong>
+                </div>
+                <div class="secops-kpi">
+                    <span class="secops-kpi-lbl">TRANSPORT</span>
+                    <strong class="secops-kpi-val" id="cf-kpi-proto">HTTP/2 · TLS 1.3</strong>
+                </div>
+                <div class="secops-kpi">
+                    <span class="secops-kpi-lbl">PERIMETER</span>
+                    <strong class="secops-kpi-val secops-ok" id="cf-kpi-waf">ENFORCED</strong>
+                </div>
+            </div>
+
+            <dl class="specs secops-specs">
+                <div class="spec-row">
+                    <dt>CF-Ray / Edge Trace</dt>
+                    <dd class="mono" id="cf-spec-ray">Probing edge header…</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>1.1.1.1 Edge Node</dt>
+                    <dd class="mono" id="cf-spec-fl">fl=618f218 · colo=LAX</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>SNI &amp; WARP Posture</dt>
+                    <dd class="mono" id="cf-spec-sni">SNI Encrypted · WARP Off</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Origin Reverse Proxy</dt>
+                    <dd class="mono" id="cf-spec-origin">Nginx 1.26 &rarr; 127.0.0.1:3000</dd>
+                </div>
+                <div class="spec-row">
+                    <dt>Firewall &amp; Loopback</dt>
+                    <dd class="mono" id="cf-spec-fw">nftables + SSH Tunnel (:9876)</dd>
+                </div>
+            </dl>
+        </article>
+
+        <!-- Module 2: Local PM2 & Systemd Supervisor -->
+        <article class="card secops-card accent-top" aria-labelledby="pm2-card-title">
+            <header class="secops-card-head">
+                <h3 id="pm2-card-title">
+                    <i class="fa-solid fa-microchip" aria-hidden="true"></i>
+                    <span>Local PM2 &amp; Daemon Supervisor</span>
+                </h3>
+                <span class="badge badge-ok mono" id="pm2-status-badge">4/4 ONLINE</span>
+            </header>
+
+            <div class="secops-kpi-grid mono">
+                <div class="secops-kpi">
+                    <span class="secops-kpi-lbl">LOAD AVG</span>
+                    <strong class="secops-kpi-val" id="pm2-kpi-load">--</strong>
+                </div>
+                <div class="secops-kpi">
+                    <span class="secops-kpi-lbl">HOST RAM</span>
+                    <strong class="secops-kpi-val" id="pm2-kpi-ram">--%</strong>
+                </div>
+                <div class="secops-kpi">
+                    <span class="secops-kpi-lbl">DAEMON RSS</span>
+                    <strong class="secops-kpi-val" id="pm2-kpi-rss">-- MB</strong>
+                </div>
+                <div class="secops-kpi">
+                    <span class="secops-kpi-lbl">HOST UPTIME</span>
+                    <strong class="secops-kpi-val secops-ok" id="pm2-kpi-uptime">--</strong>
+                </div>
+            </div>
+
+            <div class="pm2-table-wrap mono" role="region" aria-label="Active PM2 and systemd daemons">
+                <div class="pm2-table-head">
+                    <span>DAEMON / UNIT</span>
+                    <span>MODE</span>
+                    <span>PID</span>
+                    <span>CPU</span>
+                    <span>MEM</span>
+                    <span>UPTIME</span>
+                </div>
+                <div id="pm2-daemon-list" class="pm2-daemon-list">
+                    <div class="pm2-daemon-row">
+                        <span class="pm2-d-name"><span class="status-dot"></span> portfolio</span>
+                        <span class="pm2-d-dim">fork</span>
+                        <span>--</span>
+                        <span>0.2%</span>
+                        <span>-- MB</span>
+                        <span>online</span>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Bottom Full-Width Card: Live CVE & CISA KEV Threat Radar -->
+    <article class="card secops-card cve-radar-card" aria-labelledby="cve-card-title">
+        <header class="cve-radar-head">
+            <div>
+                <h3 id="cve-card-title">
+                    <i class="fa-solid fa-shield-virus" aria-hidden="true"></i>
+                    <span>Live Vulnerability Radar (CISA KEV / NVD)</span>
+                </h3>
+                <p class="cve-sub mono" id="cve-catalog-meta">Syncing CISA Known Exploited Vulnerabilities feed…</p>
+            </div>
+
+            <div class="cve-filter-group mono" role="group" aria-label="CVE Radar category filter">
+                <span class="rrd-toolbar-label">FILTER:</span>
+                <button type="button" class="rrd-range-btn cve-filter-btn active" data-cve-filter="latest" aria-pressed="true">Latest KEV</button>
+                <button type="button" class="rrd-range-btn cve-filter-btn" data-cve-filter="infra" aria-pressed="false">Linux &amp; Infra</button>
+                <button type="button" class="rrd-range-btn cve-filter-btn" data-cve-filter="ransomware" aria-pressed="false">Ransomware</button>
+            </div>
+        </header>
+
+        <div id="cve-radar-grid" class="cve-radar-grid" aria-live="polite"></div>
+    </article>
+</section>

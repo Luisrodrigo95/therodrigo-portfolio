@@ -1,0 +1,102 @@
+<section class="section hero" id="about" aria-labelledby="about-title">
+    <p class="section-kicker">01 · About Me</p>
+    <h1 id="about-title" class="hero-name"><%= profile.name %><span class="caret" aria-hidden="true"></span></h1>
+    <p class="hero-role"><%= profile.role %></p>
+
+    <%- include('marquee') %>
+
+    <ul class="chip-row" aria-label="Highlights">
+        <li class="chip"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i> <%= profile.education %></li>
+        <% profile.tags.forEach(tag => { %>
+            <li class="chip"><%= tag %></li>
+        <% }) %>
+        <li class="chip"><i class="fa-solid fa-language" aria-hidden="true"></i> <%= profile.languages %></li>
+    </ul>
+
+    <p class="hero-bio"><%= profile.bio %></p>
+
+    <!-- Interactive Hero Terminal (Debian 13 Linux Sysadmin Console) -->
+    <div class="hero-terminal-container" id="hero-terminal" role="region" aria-label="Debian 13 Interactive Terminal">
+        <div class="terminal-window debian-terminal" id="hero-term-window">
+            <div class="terminal-bar linux-bar">
+                <div class="terminal-distro mono">
+                    <i class="fa-brands fa-debian debian-swirl" style="color: #A80030;" aria-hidden="true"></i>
+                    <span class="terminal-title">bash — rodrigo@white-stingray-87538:~ (Debian 13 Trixie)</span>
+                </div>
+                <div class="terminal-window-controls mono">
+                    <button type="button" class="linux-btn linux-btn-min" id="hero-term-min" title="Minimize terminal" aria-label="Minimize terminal" aria-expanded="true">
+                        <i class="fa-solid fa-minus" id="hero-term-min-icon" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="linux-btn linux-btn-max" id="hero-term-max" title="Maximize terminal" aria-label="Maximize terminal" aria-pressed="false">
+                        <i class="fa-regular fa-square" id="hero-term-max-icon" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="linux-btn linux-btn-close" id="hero-term-reset" title="Reset session" aria-label="Reset terminal session">✕</button>
+                </div>
+            </div>
+
+            <!-- Linux tmux/status bar for instant telemetry & context -->
+            <div class="terminal-status-bar mono" aria-label="Server telemetry bar">
+                <span class="status-seg"><i class="fa-solid fa-server" aria-hidden="true"></i> Q35-KVM</span>
+                <span class="status-seg"><i class="fa-brands fa-linux" aria-hidden="true"></i> Debian 13</span>
+                <span class="status-seg status-ok"><span class="status-dot blink" aria-hidden="true"></span> 4/4 UP</span>
+                <span class="status-seg" id="term-live-lat"><i class="fa-solid fa-bolt" aria-hidden="true"></i> --ms</span>
+                <span class="status-seg status-dim" id="term-live-uptime"><i class="fa-regular fa-clock" aria-hidden="true"></i> syncing uptime…</span>
+            </div>
+
+            <div class="terminal-screen" id="hero-term-screen">
+                <div class="terminal-log mono" id="hero-term-log" role="log" aria-live="polite">
+                    <div class="term-line term-intro">
+                        <span class="term-highlight">Linux 6.12.101+deb13-amd64 x86_64</span> · Connected to <span class="term-cyan">white-stingray-87538</span>.
+                    </div>
+                    <div class="term-line term-muted">
+                        Type <span class="term-cmd">help</span> for commands, or click any chip below to inspect the infrastructure.
+                    </div>
+                </div>
+
+                <form class="terminal-prompt-row mono" id="hero-term-form" action="javascript:void(0);">
+                    <label for="hero-term-input" class="visually-hidden">Terminal command prompt</label>
+                    <span class="term-prompt-prefix" aria-hidden="true">
+                        <span class="deb-user">rodrigo@white-stingray-87538</span>:<span class="deb-path">~</span><span class="deb-dollar">$</span>
+                    </span>
+                    <input type="text"
+                           id="hero-term-input"
+                           class="term-input"
+                           autocomplete="off"
+                           autocapitalize="none"
+                           spellcheck="false"
+                           placeholder="help, whoami, secops, cve, pm2, uptime, swarm..." />
+                    <button type="submit" class="visually-hidden">Execute</button>
+                </form>
+            </div>
+
+            <div class="terminal-chips" aria-label="Quick terminal commands">
+                <span class="chips-label mono" aria-hidden="true">Quick CLI:</span>
+                <div class="chips-scroll">
+                    <button type="button" class="term-chip" data-cmd="help">help</button>
+                    <button type="button" class="term-chip" data-cmd="whoami">whoami</button>
+                    <button type="button" class="term-chip" data-cmd="skills">skills</button>
+                    <button type="button" class="term-chip" data-cmd="htop">htop</button>
+                    <button type="button" class="term-chip" data-cmd="fleet">fleet</button>
+                    <button type="button" class="term-chip" data-cmd="vps">vps</button>
+                    <button type="button" class="term-chip" data-cmd="projects">projects</button>
+                    <button type="button" class="term-chip" data-cmd="uptime">uptime</button>
+                    <button type="button" class="term-chip" data-cmd="secops">secops</button>
+                    <button type="button" class="term-chip" data-cmd="cve">cve</button>
+                    <button type="button" class="term-chip term-chip-swarm" data-cmd="swarm"><i class="fa-solid fa-water" aria-hidden="true"></i> swarm</button>
+                    <button type="button" class="term-chip term-chip-accent" data-cmd="feed-stingray"><i class="fa-solid fa-fish-fins" aria-hidden="true"></i> feed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="visually-hidden">Core focus areas</h2>
+    <div class="focus-grid">
+        <% serverNodes.forEach(node => { %>
+            <article class="card focus-card">
+                <p class="status-line"><span class="status-dot" aria-hidden="true"></span><%= node.status %></p>
+                <h3><%= node.name %></h3>
+                <p class="card-sub"><%= node.type %></p>
+            </article>
+        <% }) %>
+    </div>
+</section>

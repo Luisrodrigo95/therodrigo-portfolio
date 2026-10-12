@@ -1,0 +1,205 @@
+<!-- DarkBot DmPlugin MCP Bridge Interactive Console Modal -->
+<dialog id="mcp-modal" class="tech-dialog mcp-dialog" closedby="any" aria-labelledby="mcp-modal-title" aria-modal="true">
+    <div class="modal-box mcp-modal-box">
+        <!-- Modal Header -->
+        <div class="modal-header mcp-modal-header">
+            <div class="modal-title-group">
+                <p class="modal-kicker mono" id="mcp-modal-kicker">
+                    <i class="fa-solid fa-plug-circle-bolt" aria-hidden="true"></i>
+                    <span>DARKBOT MCP BRIDGE // JSON-RPC 2.0 (2025-03-26)</span>
+                </p>
+                <div class="mcp-title-row">
+                    <h3 id="mcp-modal-title" class="modal-title">NODE-WIN-04 · Costalito</h3>
+                    <span class="mcp-host-tag mono" id="mcp-host-tag">costalito.therodrigo.com (127.0.0.1:9876)</span>
+                </div>
+            </div>
+
+            <div class="modal-header-actions">
+                <span id="mcp-conn-badge" class="badge badge-ok mono" title="MCP Bridge transport status">
+                    <span class="ping-live-dot"></span>
+                    <span id="mcp-conn-label">SYNCING…</span>
+                </span>
+                <button type="button" class="mcp-raw-toggle mono" id="mcp-raw-toggle" aria-pressed="false" title="Toggle Raw JSON-RPC 2.0 Inspector">
+                    <i class="fa-solid fa-code" aria-hidden="true"></i>
+                    <span>JSON-RPC</span>
+                </button>
+                <button type="button" class="modal-close-btn" id="mcp-modal-close" aria-label="Close MCP console">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Node Protocol Status Bar (Dedicated to NODE-WIN-04 Costalito) -->
+        <div class="mcp-node-bar mono" role="region" aria-label="Active VPS Node">
+            <div class="mcp-node-tabs">
+                <span class="mcp-bar-lbl">TARGET VPS:</span>
+                <% vpsFleet.filter(server => server.mcpEnabled).forEach(server => { %>
+                    <button type="button"
+                            class="mcp-node-tab mono active"
+                            data-mcp-switch="<%= server.id %>"
+                            data-mcp-role="<%= server.role %>"
+                            data-mcp-host="<%= server.hostLabel || '' %>"
+                            data-mcp-enabled="true"
+                            aria-pressed="true">
+                        <i class="fa-brands <%= server.osClass %>" aria-hidden="true"></i>
+                        <span><%= server.id %> · <%= server.role %></span>
+                        <span class="mcp-tab-dot" title="Online"></span>
+                    </button>
+                <% }) %>
+            </div>
+            <div class="mcp-proto-meta">
+                <span id="mcp-plugin-ver">DmPlugin v2.14.3</span>
+                <span>·</span>
+                <span id="mcp-rpc-lat">RPC: --ms</span>
+            </div>
+        </div>
+
+        <!-- Live Telemetry HUD Strip (4 Cards) -->
+        <div class="mcp-hud-grid mono" aria-label="Live DarkBot runtime summary">
+            <div class="mcp-kpi-card">
+                <span class="mcp-kpi-lbl">BOT RUNTIME</span>
+                <strong class="mcp-kpi-val" id="mcp-kpi-state">RUNNING</strong>
+                <span class="mcp-kpi-sub" id="mcp-kpi-module">Module: SimpleGalaxyGate</span>
+            </div>
+            <div class="mcp-kpi-card">
+                <span class="mcp-kpi-lbl">MAP &amp; POSITION</span>
+                <strong class="mcp-kpi-val" id="mcp-kpi-map">Map 2-8</strong>
+                <span class="mcp-kpi-sub" id="mcp-kpi-pos">X: 10087 · Y: 2169 · CFG 1</span>
+            </div>
+            <div class="mcp-kpi-card">
+                <span class="mcp-kpi-lbl">HULL &amp; SHIELD</span>
+                <strong class="mcp-kpi-val" id="mcp-kpi-hp">HP 100% · SHD 100%</strong>
+                <span class="mcp-kpi-sub" id="mcp-kpi-cargo">Cargo: 3850 / 4000</span>
+            </div>
+            <div class="mcp-kpi-card">
+                <span class="mcp-kpi-lbl">SESSION EARNINGS</span>
+                <strong class="mcp-kpi-val mcp-kpi-uri" id="mcp-kpi-uri">+865,421 URI</strong>
+                <span class="mcp-kpi-sub" id="mcp-kpi-perf">Tick: 0.62ms · Ping: 33ms</span>
+            </div>
+        </div>
+
+        <!-- Preconfigured Commands Deck -->
+        <div class="mcp-command-deck">
+            <!-- Tier 1: Public Read-Only Telemetry -->
+            <div class="mcp-deck-row">
+                <span class="mcp-deck-label mono">
+                    <i class="fa-solid fa-satellite-dish" aria-hidden="true"></i> READ TELEMETRY:
+                </span>
+                <div class="mcp-chips-wrap">
+                    <button type="button" class="term-chip mcp-cmd-chip" data-mcp-cmd="status">status</button>
+                    <button type="button" class="term-chip mcp-cmd-chip" data-mcp-cmd="stats">stats</button>
+                    <button type="button" class="term-chip mcp-cmd-chip" data-mcp-cmd="hero">hero</button>
+                    <button type="button" class="term-chip mcp-cmd-chip" data-mcp-cmd="entities">entities</button>
+                    <button type="button" class="term-chip mcp-cmd-chip" data-mcp-cmd="module">module</button>
+                    <button type="button" class="term-chip mcp-cmd-chip" data-mcp-cmd="pet">pet</button>
+                    <button type="button" class="term-chip mcp-cmd-chip" data-mcp-cmd="boosters">boosters</button>
+                    <button type="button" class="term-chip mcp-cmd-chip" data-mcp-cmd="repair">repair</button>
+                    <button type="button" class="term-chip mcp-cmd-chip" data-mcp-cmd="plugins">plugins</button>
+                    <button type="button" class="term-chip mcp-cmd-chip" data-mcp-cmd="logs">logs</button>
+                </div>
+            </div>
+
+            <!-- Tier 2: Operator Mutating Controls (Protected by PIN/Token) -->
+            <div class="mcp-deck-row mcp-operator-row">
+                <div class="mcp-operator-head">
+                    <span class="mcp-deck-label mono" id="mcp-auth-badge">
+                        <i class="fa-solid fa-lock" id="mcp-auth-icon" aria-hidden="true"></i>
+                        <span id="mcp-auth-status-text">OPERATOR LOCKED:</span>
+                    </span>
+                    <form class="mcp-auth-form mono" id="mcp-auth-form" action="javascript:void(0);">
+                        <label for="mcp-token-input" class="visually-hidden">Operator PIN or Token</label>
+                        <input type="password"
+                               id="mcp-token-input"
+                               class="mcp-token-input mono"
+                               placeholder="Enter Operator PIN…"
+                               autocomplete="off" />
+                        <button type="submit" class="mcp-auth-btn mono" id="mcp-auth-submit">Unlock</button>
+                    </form>
+                </div>
+                <div class="mcp-chips-wrap" id="mcp-operator-chips">
+                    <!-- Config Query (Consultar configuración) -->
+                    <button type="button" class="term-chip term-chip-accent mcp-op-chip" data-mcp-cmd="get-config" title="tools/call -> get_config (Consultar toda la configuración)">
+                        <i class="fa-solid fa-sliders" aria-hidden="true"></i> get-config
+                    </button>
+                    <button type="button" class="term-chip term-chip-accent mcp-op-chip" data-mcp-cmd="get-config" data-mcp-path="general" title="tools/call -> get_config general (Consultar config general)">
+                        <i class="fa-solid fa-gear" aria-hidden="true"></i> cfg:general
+                    </button>
+                    <!-- Config Mutation (Cambiar configuración) -->
+                    <button type="button" class="term-chip term-chip-swarm mcp-op-chip" data-mcp-cmd="set-map" data-mcp-arg="4-4" title="tools/call -> set_config (general.working_map: 4-4)">
+                        <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i> cfg:map-4-4
+                    </button>
+                    <button type="button" class="term-chip term-chip-swarm mcp-op-chip" data-mcp-cmd="set-map" data-mcp-arg="2-8" title="tools/call -> set_config (general.working_map: 2-8)">
+                        <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i> cfg:map-2-8
+                    </button>
+                    <button type="button" class="term-chip term-chip-swarm mcp-op-chip" data-mcp-cmd="set-config" data-mcp-path="general.offensive_config" data-mcp-val="1" title="tools/call -> set_config (general.offensive_config: 1)">
+                        <i class="fa-solid fa-crosshairs" aria-hidden="true"></i> cfg:conf-1
+                    </button>
+                    <button type="button" class="term-chip term-chip-swarm mcp-op-chip" data-mcp-cmd="set-config" data-mcp-path="general.offensive_config" data-mcp-val="2" title="tools/call -> set_config (general.offensive_config: 2)">
+                        <i class="fa-solid fa-crosshairs" aria-hidden="true"></i> cfg:conf-2
+                    </button>
+                    <button type="button" class="term-chip term-chip-accent mcp-op-chip" data-mcp-cmd="set-profile" data-mcp-arg="GalaxyGates" title="tools/call -> set_profile (GalaxyGates)">
+                        <i class="fa-solid fa-circle-nodes" aria-hidden="true"></i> profile:gg
+                    </button>
+                    <button type="button" class="term-chip term-chip-accent mcp-op-chip" data-mcp-cmd="toggle-pause" title="tools/call -> toggle_pause">
+                        <i class="fa-solid fa-play-pause" aria-hidden="true"></i> toggle-pause
+                    </button>
+                    <button type="button" class="term-chip term-chip-accent mcp-op-chip" data-mcp-cmd="reload-plugins" title="tools/call -> reload_plugins">
+                        <i class="fa-solid fa-rotate" aria-hidden="true"></i> reload-plugins
+                    </button>
+                    <button type="button" class="term-chip term-chip-accent mcp-op-chip" data-mcp-cmd="reset-deaths" title="tools/call -> reset_deaths">
+                        <i class="fa-solid fa-skull" aria-hidden="true"></i> reset-deaths
+                    </button>
+                    <button type="button" class="term-chip term-chip-swarm mcp-op-chip" data-mcp-cmd="set-pet" data-mcp-arg="LOOTER" title="tools/call -> set_pet (LOOTER)">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i> pet:looter
+                    </button>
+                    <button type="button" class="term-chip term-chip-swarm mcp-op-chip" data-mcp-cmd="set-pet" data-mcp-arg="GUARD" title="tools/call -> set_pet (GUARD)">
+                        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i> pet:guard
+                    </button>
+                    <button type="button" class="term-chip term-chip-swarm mcp-op-chip" data-mcp-cmd="set-pet" data-mcp-arg="PASSIVE" title="tools/call -> set_pet (PASSIVE)">
+                        <i class="fa-solid fa-pause" aria-hidden="true"></i> pet:passive
+                    </button>
+                    <button type="button" class="term-chip term-chip-accent mcp-op-chip" data-mcp-cmd="move-stop" title="tools/call -> move (stop)">
+                        <i class="fa-solid fa-hand" aria-hidden="true"></i> ship:stop
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Terminal Output & Prompt -->
+        <div class="terminal-screen mcp-terminal-screen" id="mcp-term-screen">
+            <div class="terminal-log mono" id="mcp-term-log" role="log" aria-live="polite"></div>
+
+            <form class="terminal-prompt-row mono" id="mcp-term-form" action="javascript:void(0);">
+                <label for="mcp-term-input" class="visually-hidden">MCP Bridge CLI command input</label>
+                <span class="term-prompt-prefix" aria-hidden="true">
+                    <span class="deb-user" id="mcp-prompt-host">mcp@costalito</span>:<span class="deb-path">/rpc</span><span class="deb-dollar">&gt;</span>
+                </span>
+                <input type="text"
+                       id="mcp-term-input"
+                       class="term-input"
+                       autocomplete="off"
+                       autocapitalize="none"
+                       spellcheck="false"
+                       placeholder="status, stats, hero, get-config, set-config general.working_map 4-4, set-map 2-8, auth <pin>…" />
+                <button type="submit" class="visually-hidden">Send RPC</button>
+            </form>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer mcp-modal-footer">
+            <div class="modal-footer-left">
+                <span class="mono modal-footer-note">
+                    <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
+                    <span>Privacy Filter Active: Pilot IDs &amp; Memory Addresses Redacted</span>
+                </span>
+            </div>
+            <div class="modal-footer-actions">
+                <button type="button" class="term-btn mono" id="mcp-refresh-btn">
+                    <i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> Sync HUD
+                </button>
+                <button type="button" class="term-btn mono" id="mcp-clear-btn">Clear Log</button>
+                <button type="button" class="term-btn mono" id="mcp-modal-close-footer">Close</button>
+            </div>
+        </div>
+    </div>
+</dialog>

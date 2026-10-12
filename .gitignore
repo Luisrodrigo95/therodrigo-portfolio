@@ -1,0 +1,13 @@
+node_modules/
+.env
+*.env.local
+*.log
+backups/
+*.bak*
+*.zip
+data/mcp-snapshot.json
+data/profile.js.bak*
+public/Wiwishop/
+public/wiwishop
+.DS_Store
+GEMINI.md

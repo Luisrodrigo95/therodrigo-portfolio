@@ -1,0 +1,15 @@
+<div class="marquee-container">
+    <p class="marquee-title">Technologies &amp; Tools</p>
+    <div class="marquee-window">
+        <ul class="marquee-content" aria-label="Technologies and tools">
+            <% techMarquee.forEach(item => { %>
+                <li class="marquee-item"><i class="<%= item.icon %>" aria-hidden="true"></i> <%= item.label %></li>
+            <% }) %>
+        </ul>
+        <ul class="marquee-content" aria-hidden="true">
+            <% techMarquee.forEach(item => { %>
+                <li class="marquee-item"><i class="<%= item.icon %>" aria-hidden="true"></i> <%= item.label %></li>
+            <% }) %>
+        </ul>
+    </div>
+</div>

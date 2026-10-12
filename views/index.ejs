@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <%- include('partials/head') %>
+</head>
+<body>
+
+    <!-- Ambient Stingray Cyber-Ocean & Cardumen Swarm System -->
+    <div id="stingray-ocean" class="stingray-ocean" aria-hidden="true">
+        <!-- Ambient Gliders -->
+        <div class="manta-glider manta-glider-main" id="manta-glider-main"></div>
+        <div class="manta-glider manta-glider-depth-1"></div>
+        <div class="manta-glider manta-glider-depth-2"></div>
+        <!-- Dynamic Swarm Container -->
+        <div id="manta-swarm" class="manta-swarm"></div>
+    </div>
+
+    <div id="boot-screen" aria-hidden="true">
+        <pre id="boot-log"></pre>
+        <p id="boot-welcome"></p>
+        <p class="boot-skip">[ click or press any key to skip ]</p>
+    </div>
+
+    <%- include('partials/nav') %>
+
+    <main id="main">
+        <%- include('partials/hero') %>
+        <%- include('partials/fleet') %>
+        <%- include('partials/infra') %>
+        <%- include('partials/career') %>
+        <%- include('partials/wins') %>
+        <%- include('partials/offduty') %>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <!-- Technical Deep-Dive Modal (Lab Write-up System) -->
+    <%- include('partials/tech-modal') %>
+
+    <!-- DarkBot DmPlugin MCP Bridge Interactive Console Modal -->
+    <%- include('partials/mcp-modal') %>
+
+    <!-- Discreet Persistent Telemetry HUD (Bottom-Left, balanced with Scroll-Top) -->
+    <aside class="hud-telemetry mono" role="status" aria-label="VPS Server Live Status" title="white-stingray-87538 Telemetry">
+        <span class="sonar-beacon" aria-hidden="true">
+            <span class="sonar-wave"></span>
+            <span class="sonar-core"></span>
+        </span>
+        <span class="hud-telemetry-text">
+            <span class="hud-live-tag">LIVE</span>
+            <span class="hud-host">white-stingray</span>
+            <span class="hud-sep">·</span>
+            <span class="hud-stat" id="hud-ticker-lat">0.8ms</span>
+        </span>
+    </aside>
+
+    <!-- Floating Back-to-Top Button with Circular SVG Progress Ring -->
+    <button type="button" id="scroll-top-btn" class="scroll-top-btn" aria-label="Scroll back to top" title="Scroll back to top" hidden>
+        <svg class="progress-ring" width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
+            <circle class="progress-ring-bg" cx="23" cy="23" r="19" fill="none" stroke-width="3" />
+            <circle id="progress-ring-bar" class="progress-ring-bar" cx="23" cy="23" r="19" fill="none" stroke-width="3" stroke-dasharray="119.38" stroke-dashoffset="119.38" />
+        </svg>
+        <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+    </button>
+
+    <!-- Global HUD Toast Notification System -->
+    <div id="hud-toast" class="hud-toast mono" role="status" aria-live="polite" hidden></div>
+
+</body>
+</html>

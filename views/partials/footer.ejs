@@ -1,0 +1,45 @@
+<footer class="site-footer">
+    <div class="footer-meta">
+        <div class="footer-actions">
+            <button type="button" id="uptime-btn" class="term-btn mono">
+                <span class="status-dot" aria-hidden="true"></span>
+                <span aria-hidden="true"><%= profile.handle %> </span>uptime --all
+            </button>
+
+            <% if (profile.contact.linkedin) { %>
+                <a class="term-btn mono" href="<%= profile.contact.linkedin %>" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">
+                    <i class="fa-brands fa-linkedin" aria-hidden="true"></i> LinkedIn
+                </a>
+            <% } %>
+
+            <div class="term-split-btn mono">
+                <a class="term-split-main" href="mailto:<%= profile.contact.email %>" title="Send email to <%= profile.contact.email %>">
+                    <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                    <span><%= profile.contact.email %></span>
+                </a>
+                <button type="button" id="copy-email" class="term-split-copy" data-code="<%= profile.contact.email %>" title="Copy email address" aria-label="Copy email address">
+                    <i class="fa-regular fa-copy" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <% if (profile.contact.phone) { %>
+                <div class="term-split-btn mono">
+                    <a class="term-split-main" href="<%= profile.contact.whatsapp %>" target="_blank" rel="noopener noreferrer" title="Message on WhatsApp (<%= profile.contact.phone %>)">
+                        <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+                        <span><%= profile.contact.phone %></span>
+                    </a>
+                    <button type="button" id="copy-phone" class="term-split-copy" data-code="<%= profile.contact.phone %>" title="Copy phone number" aria-label="Copy phone number">
+                        <i class="fa-regular fa-copy" aria-hidden="true"></i>
+                    </button>
+                </div>
+            <% } %>
+        </div>
+
+        <p id="uptime-out" class="uptime-out mono" role="status" hidden></p>
+        <p class="footer-legend">
+            <i class="fa-solid fa-universal-access" aria-hidden="true"></i>
+            Built to meet WCAG 2.1 Level AA (ISO/IEC 40500) · audited with Accessibility Insights for Web
+        </p>
+        <p class="footer-copy">© <%= new Date().getFullYear() %> <%= profile.name %> · Express + EJS on Debian, self-hosted</p>
+    </div>
+</footer>

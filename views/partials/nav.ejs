@@ -1,0 +1,29 @@
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="top-bar">
+    <nav class="pill-nav" aria-label="Site sections">
+        <span class="prompt" aria-hidden="true">
+            <span class="status-dot blink"></span>
+            <span class="prompt-text"><%= profile.handle %></span>
+        </span>
+        <a href="#about" aria-label="About"><i class="fa-solid fa-user" aria-hidden="true"></i><span class="nav-label">About</span></a>
+        <a href="#fleet" aria-label="Fleet"><i class="fa-solid fa-server" aria-hidden="true"></i><span class="nav-label">Fleet</span></a>
+        <a href="#infra" aria-label="Infrastructure"><i class="fa-solid fa-network-wired" aria-hidden="true"></i><span class="nav-label">Infra</span></a>
+        <a href="#career" aria-label="Career"><i class="fa-solid fa-briefcase" aria-hidden="true"></i><span class="nav-label">Career</span></a>
+        <a href="#projects" aria-label="Projects"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i><span class="nav-label">Projects</span></a>
+        <a href="#offduty" aria-label="Security and Server Telemetry"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i><span class="nav-label">SecOps</span></a>
+    </nav>
+
+    <div class="theme-pill">
+        <div class="theme-selector" role="group" aria-label="Color theme">
+            <% themes.forEach(theme => { %>
+                <button type="button"
+                        class="theme-btn swatch-<%= theme.id %>"
+                        data-theme-id="<%= theme.id %>"
+                        aria-pressed="false"
+                        title="<%= theme.label %> theme"
+                        aria-label="Switch to <%= theme.label %> theme"></button>
+            <% }) %>
+        </div>
+    </div>
+</header>

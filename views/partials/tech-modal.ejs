@@ -1,0 +1,87 @@
+<!-- Technical Deep-Dive Modal (Lab Write-ups / Architecture Breakdown) -->
+<dialog id="tech-modal" class="tech-dialog" aria-labelledby="modal-title" aria-modal="true">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title-group">
+                <p class="modal-kicker mono" id="modal-kicker">ENGINEERING DEEP DIVE</p>
+                <h3 id="modal-title" class="modal-title">System Architecture</h3>
+            </div>
+            <div class="modal-header-actions">
+                <span id="modal-badge" class="badge badge-ok">LIVE</span>
+                <button type="button" class="modal-close-btn" id="modal-close" aria-label="Close dialog">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="modal-tabs" role="tablist" aria-label="Deep-dive sections">
+            <button type="button" class="modal-tab active mono" role="tab" id="tab-btn-overview" aria-selected="true" aria-controls="tab-pane-overview">
+                <i class="fa-solid fa-circle-info" aria-hidden="true"></i> Overview
+            </button>
+            <button type="button" class="modal-tab mono" role="tab" id="tab-btn-arch" aria-selected="false" aria-controls="tab-pane-arch">
+                <i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Architecture
+            </button>
+            <button type="button" class="modal-tab mono" role="tab" id="tab-btn-code" aria-selected="false" aria-controls="tab-pane-code">
+                <i class="fa-solid fa-code" aria-hidden="true"></i> Config &amp; Script
+            </button>
+            <button type="button" class="modal-tab mono" role="tab" id="tab-btn-outcomes" aria-selected="false" aria-controls="tab-pane-outcomes">
+                <i class="fa-solid fa-chart-line" aria-hidden="true"></i> Outcomes
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <!-- Tab 1: Overview -->
+            <div class="modal-pane active" id="tab-pane-overview" role="tabpanel" aria-labelledby="tab-btn-overview">
+                <p id="modal-overview" class="modal-desc"></p>
+                <h4 class="mini-head ruled"><i class="fa-solid fa-microchip" aria-hidden="true"></i> Technical Specifications</h4>
+                <dl class="specs modal-specs" id="modal-specs"></dl>
+            </div>
+
+            <!-- Tab 2: Architecture Diagram -->
+            <div class="modal-pane" id="tab-pane-arch" role="tabpanel" aria-labelledby="tab-btn-arch" hidden>
+                <div class="diagram-container">
+                    <div class="diagram-bar mono">
+                        <span><i class="fa-solid fa-network-wired" aria-hidden="true"></i> TOPOLOGY // SYSTEM FLOW</span>
+                    </div>
+                    <pre class="arch-diagram mono" id="modal-arch"></pre>
+                </div>
+            </div>
+
+            <!-- Tab 3: Code / Configuration Snippet -->
+            <div class="modal-pane" id="tab-pane-code" role="tabpanel" aria-labelledby="tab-btn-code" hidden>
+                <div class="code-box">
+                    <div class="code-box-header mono">
+                        <span id="modal-snippet-title"><i class="fa-solid fa-file-code" aria-hidden="true"></i> configuration</span>
+                        <button type="button" class="copy-snippet-btn mono" id="modal-copy-snippet" aria-label="Copy code snippet">
+                            <i class="fa-regular fa-copy" aria-hidden="true"></i> Copy
+                        </button>
+                    </div>
+                    <pre class="code-block mono"><code id="modal-snippet-code"></code></pre>
+                </div>
+            </div>
+
+            <!-- Tab 4: Impact & Outcomes -->
+            <div class="modal-pane" id="tab-pane-outcomes" role="tabpanel" aria-labelledby="tab-btn-outcomes" hidden>
+                <h4 class="mini-head"><i class="fa-solid fa-check-double" aria-hidden="true"></i> Key Engineering Deliverables</h4>
+                <ul class="outcomes-list" id="modal-outcomes"></ul>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <div class="modal-footer-left">
+                <span class="mono modal-footer-note"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Verified on Debian 13 VPS</span>
+            </div>
+            <div class="modal-footer-actions">
+                <a id="modal-live-link" class="term-btn term-btn-accent mono" href="#" target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> <span id="modal-live-label">Launch Live App</span>
+                </a>
+                <button type="button" class="term-btn mono" id="modal-close-footer">Close</button>
+            </div>
+        </div>
+    </div>
+</dialog>
+
+<!-- Embedded Deep Dive Dataset -->
+<script type="application/json" id="deep-dives-data">
+<%- JSON.stringify(projectDeepDives) %>
+</script>

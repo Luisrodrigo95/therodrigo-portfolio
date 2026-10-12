@@ -1,0 +1,86 @@
+<section class="section" id="projects" aria-labelledby="projects-title">
+    <div class="section-head">
+        <p class="section-kicker">05 · Wins &amp; Projects</p>
+        <h2 id="projects-title">Recent Wins &amp; Engineering Deployments</h2>
+        <p class="section-sub">Shipped work, plus doors to the other things running on this server.</p>
+    </div>
+
+    <div class="wins-grid">
+        <% lastWins.forEach(win => { %>
+            <article class="card win-card">
+                <p class="win-year mono"><%= win.year %> // ACHIEVED</p>
+                <h3><%= win.title %></h3>
+                <p class="card-sub"><%= win.details %></p>
+                <% if (win.deepDiveId) { %>
+                    <div class="card-actions">
+                        <button type="button" class="deep-dive-btn mono" data-dive-id="<%= win.deepDiveId %>">
+                            <i class="fa-solid fa-code-branch" aria-hidden="true"></i> Technical Deep Dive
+                        </button>
+                    </div>
+                <% } %>
+            </article>
+        <% }) %>
+    </div>
+
+    <h3 class="sub-head"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Projects &amp; Links</h3>
+    <div class="hub-grid">
+        <% hubLinks.forEach(link => { %>
+            <% if (link.type === 'promo') { %>
+                <article class="card hub-card promo-card">
+                    <div class="hub-head">
+                        <i class="<%= link.icon %> hub-icon" aria-hidden="true"></i>
+                        <span class="badge badge-accent"><%= link.badge %></span>
+                    </div>
+                    <h4><a href="<%= link.href %>" target="_blank" rel="noopener noreferrer nofollow sponsored"><%= link.title %><span class="visually-hidden"> (opens in a new tab)</span></a></h4>
+                    <p class="card-sub"><%= link.desc %></p>
+                    <div class="promo-row">
+                        <button type="button" class="copy-code mono" data-code="<%= link.code %>" data-href="<%= link.href %>">
+                            <span class="code-text"><%= link.code %></span>
+                            <i class="fa-regular fa-copy" aria-hidden="true"></i>
+                            <span class="visually-hidden">Copy discount code</span>
+                        </button>
+                        <span class="copy-feedback mono" role="status"></span>
+                    </div>
+                </article>
+            <% } else if (link.href) { %>
+                <article class="card hub-card">
+                    <div class="hub-head">
+                        <i class="<%= link.icon %> hub-icon" aria-hidden="true"></i>
+                        <% if (link.badge) { %><span class="badge badge-ok"><%= link.badge %></span><% } %>
+                    </div>
+                    <h4>
+                        <% if (/^https?:/.test(link.href)) { %>
+                            <a class="stretch-link" href="<%= link.href %>" target="_blank" rel="noopener noreferrer"><%= link.title %><span class="visually-hidden"> (opens in a new tab)</span></a>
+                        <% } else { %>
+                            <a class="stretch-link" href="<%= link.href %>"><%= link.title %></a>
+                        <% } %>
+                    </h4>
+                    <p class="card-sub"><%= link.desc %></p>
+                    <% if (link.deepDiveId) { %>
+                        <div class="card-actions">
+                            <button type="button" class="deep-dive-btn mono" data-dive-id="<%= link.deepDiveId %>">
+                                <i class="fa-solid fa-code-branch" aria-hidden="true"></i> Technical Deep Dive
+                            </button>
+                        </div>
+                    <% } %>
+                </article>
+            <% } else { %>
+                <article class="card hub-card <%= link.deepDiveId ? '' : 'hub-disabled' %>">
+                    <div class="hub-head">
+                        <i class="<%= link.icon %> hub-icon" aria-hidden="true"></i>
+                        <span class="badge badge-dim"><%= link.badge %></span>
+                    </div>
+                    <h4><%= link.title %></h4>
+                    <p class="card-sub"><%= link.desc %></p>
+                    <% if (link.deepDiveId) { %>
+                        <div class="card-actions">
+                            <button type="button" class="deep-dive-btn mono" data-dive-id="<%= link.deepDiveId %>">
+                                <i class="fa-solid fa-code-branch" aria-hidden="true"></i> Technical Deep Dive
+                            </button>
+                        </div>
+                    <% } %>
+                </article>
+            <% } %>
+        <% }) %>
+    </div>
+</section>

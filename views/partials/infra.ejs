@@ -1,0 +1,33 @@
+<section class="section" id="infra" aria-labelledby="infra-title">
+    <div class="section-head">
+        <p class="section-kicker">03 · Infrastructure</p>
+        <h2 id="infra-title">Where It Runs &amp; What I Work On</h2>
+        <p class="section-sub">The production host serving this page, and the workstation behind the projects.</p>
+    </div>
+
+    <div class="infra-grid">
+        <article class="card infra-card accent-top">
+            <h3><i class="fa-solid fa-cloud" aria-hidden="true"></i> Live Production Host</h3>
+            <dl class="specs">
+                <div class="spec-row"><dt>Provider</dt><dd><%= hostVPS.provider %></dd></div>
+                <div class="spec-row"><dt>Platform</dt><dd><%= hostVPS.hypervisor %> (<%= hostVPS.machineModel %>)</dd></div>
+                <div class="spec-row"><dt>OS / Core</dt><dd><%= hostVPS.os %></dd></div>
+                <div class="spec-row"><dt>Compute</dt><dd><%= hostVPS.cpu %> / <%= hostVPS.ram %></dd></div>
+                <div class="spec-row"><dt>Storage</dt><dd><%= hostVPS.storage %></dd></div>
+            </dl>
+        </article>
+
+        <article class="card infra-card accent-top">
+            <h3><i class="fa-solid fa-desktop" aria-hidden="true"></i> Local Workstation</h3>
+            <dl class="specs">
+                <div class="spec-row"><dt>CPU</dt><dd><%= localPC.cpu %></dd></div>
+                <div class="spec-row"><dt>RAM</dt><dd><%= localPC.ram %></dd></div>
+                <div class="spec-row"><dt>GPU</dt><dd><%= localPC.gpu %></dd></div>
+                <div class="spec-row"><dt>Storage</dt><dd><%= localPC.storage %></dd></div>
+                <div class="spec-row"><dt>Motherboard</dt><dd><%= localPC.motherboard %></dd></div>
+                <div class="spec-row"><dt>Cooling</dt><dd><%= localPC.cooler %></dd></div>
+            </dl>
+            <p class="model-label mono"><%= localPC.cabinet %></p>
+        </article>
+    </div>
+</section>

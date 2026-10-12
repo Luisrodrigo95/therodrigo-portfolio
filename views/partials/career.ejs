@@ -1,0 +1,33 @@
+<section class="section" id="career" aria-labelledby="career-title">
+    <div class="section-head">
+        <p class="section-kicker">04 · Career</p>
+        <h2 id="career-title">Professional Track Record</h2>
+        <p class="section-sub">From industrial maintenance floors to open-source compliance and hosting infrastructure.</p>
+    </div>
+
+    <ol class="timeline" id="career-timeline">
+        <% workHistory.forEach(job => { %>
+            <li class="timeline-item<%= job.current ? ' timeline-current' : '' %>"<%- job.collapsed ? ' hidden' : '' %>>
+                <div class="timeline-meta">
+                    <span class="timeline-period mono"><%= job.period %></span>
+                    <% if (job.current) { %><span class="badge badge-ok">Current</span><% } %>
+                </div>
+                <h3 class="timeline-role"><%= job.role %></h3>
+                <p class="timeline-org"><%= job.company %> · <%= job.location %></p>
+                <ul class="timeline-bullets">
+                    <% job.bullets.forEach(bullet => { %>
+                        <li><%= bullet %></li>
+                    <% }) %>
+                </ul>
+            </li>
+        <% }) %>
+        <% if (workHistory.some(job => job.collapsed)) { %>
+            <li class="timeline-item timeline-more">
+                <button type="button" id="career-load-more" class="load-more"
+                        aria-expanded="false" aria-controls="career-timeline">
+                    <i class="fa-solid fa-chevron-down" aria-hidden="true"></i> Load more
+                </button>
+            </li>
+        <% } %>
+    </ol>
+</section>
