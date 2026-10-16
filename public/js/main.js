@@ -33,12 +33,51 @@
     }
     applyTheme(saved);
 
+    /* ------------------------------------------------------------------
+       Unified passive requestAnimationFrame scroll coordinator
+       Eliminates layout thrashing from multiple scroll listeners.
+       ------------------------------------------------------------------ */
+    var scrollSubscribers = [];
+    var scrollTicking = false;
+
+    function subscribeScroll(fn) {
+        if (typeof fn === 'function') {
+            scrollSubscribers.push(fn);
+        }
+    }
+
+    function dispatchScroll() {
+        if (scrollTicking) return;
+        scrollTicking = true;
+        requestAnimationFrame(function () {
+            scrollTicking = false;
+            for (var i = 0; i < scrollSubscribers.length; i++) {
+                try {
+                    scrollSubscribers[i]();
+                } catch (e) {
+                    console.error('Scroll subscriber error:', e);
+                }
+            }
+        });
+    }
+
+    window.addEventListener('scroll', dispatchScroll, { passive: true });
+    window.addEventListener('resize', dispatchScroll, { passive: true });
+
     themeButtons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function (e) {
+            var isCurrent = btn.getAttribute('aria-pressed') === 'true';
+            if (themePill && themePill.classList.contains('is-compact') && !themePill.classList.contains('is-expanded') && isCurrent) {
+                // Tap on active swatch while compact -> expand so user can choose other themes
+                e.stopPropagation();
+                themePill.classList.add('is-expanded');
+                return;
+            }
             applyTheme(btn.dataset.themeId);
             hasSelectedFirstColor = true;
             wasScrolledDown = window.scrollY > 35;
             if (themePill) {
+                themePill.classList.remove('is-expanded');
                 themePill.classList.add('is-compact', 'just-selected');
             }
         });
@@ -48,9 +87,23 @@
         themePill.addEventListener('mouseleave', function () {
             themePill.classList.remove('just-selected');
         });
+
+        // Mobile touch toggle: tapping compact pill expands swatches
+        themePill.addEventListener('click', function (e) {
+            if (themePill.classList.contains('is-compact') && !e.target.closest('.theme-btn')) {
+                themePill.classList.toggle('is-expanded');
+            }
+        });
+
+        // Click outside collapses expanded theme pill
+        document.addEventListener('click', function (e) {
+            if (!themePill.contains(e.target)) {
+                themePill.classList.remove('is-expanded');
+            }
+        });
     }
 
-    window.addEventListener('scroll', function () {
+    function updateThemePillScroll() {
         if (!themePill || !hasSelectedFirstColor) return;
         var y = window.scrollY || window.pageYOffset || 0;
         if (y > 35) {
@@ -60,9 +113,10 @@
             }
         } else if (y <= 15 && wasScrolledDown) {
             wasScrolledDown = false;
-            themePill.classList.remove('is-compact', 'just-selected');
+            themePill.classList.remove('is-compact', 'just-selected', 'is-expanded');
         }
-    }, { passive: true });
+    }
+    subscribeScroll(updateThemePillScroll);
 
     /* ------------------------------------------------------------------
        Discount-code copy buttons
@@ -343,10 +397,12 @@
         });
     }
 
-    // Initial load + 60s auto-refresh
+    // Initial load + 60s auto-refresh (paused when page is hidden)
     refreshFleetTelemetry('4h', false);
     setInterval(function () {
-        refreshFleetTelemetry(currentRrdRange, false);
+        if (!document.hidden) {
+            refreshFleetTelemetry(currentRrdRange, false);
+        }
     }, 60000);
 
     /* ------------------------------------------------------------------
@@ -613,15 +669,7 @@
             });
         }
 
-        var ticking = false;
-        function onScroll() {
-            if (ticking) return;
-            ticking = true;
-            requestAnimationFrame(function () { ticking = false; update(); });
-        }
-
-        window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', onScroll);
+        subscribeScroll(update);
         update();
     })();
 
@@ -844,6 +892,7 @@
         if (!hudStatEl && !termStatEl && !navStatEl) return;
 
         function updateTicker() {
+            if (document.hidden) return;
             var ms = (Math.random() * 0.45 + 0.65).toFixed(1);
             if (hudStatEl) hudStatEl.textContent = ms + 'ms';
             if (termStatEl) termStatEl.innerHTML = '<i class="fa-solid fa-bolt" aria-hidden="true"></i> ' + ms + 'ms';
@@ -1621,16 +1670,7 @@
             }
         }
 
-        var ticking = false;
-        window.addEventListener('scroll', function () {
-            if (!ticking) {
-                requestAnimationFrame(function () {
-                    ticking = false;
-                    updateProgress();
-                });
-                ticking = true;
-            }
-        }, { passive: true });
+        subscribeScroll(updateProgress);
 
         btn.addEventListener('click', function () {
             window.scrollTo({
@@ -2495,5 +2535,22 @@
         setInterval(function () {
             if (!document.hidden) fetchSecOpsTelemetry(false);
         }, 60000);
+
+        // Re-sync stale telemetry when user returns to the tab after >30s in background
+        var lastVisibilityRefresh = Date.now();
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) {
+                var now = Date.now();
+                if (now - lastVisibilityRefresh > 30000) {
+                    lastVisibilityRefresh = now;
+                    if (typeof refreshFleetTelemetry === 'function') {
+                        refreshFleetTelemetry(currentRrdRange, false);
+                    }
+                    if (typeof fetchSecOpsTelemetry === 'function') {
+                        fetchSecOpsTelemetry(false);
+                    }
+                }
+            }
+        });
     });
 })();
