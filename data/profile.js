@@ -19,7 +19,7 @@ const profile = {
     languages: "EN Advanced · ES Native",
     // Public contact channels shown in the footer
     contact: {
-        email: "luisrodrigo_95@hotmail.com",
+        email: "contacto@therodrigo.com",
         linkedin: "https://www.linkedin.com/in/luis-rodrigo-garcia-hernandez-43376678",
         phone: "+52 442 169 4805",
         whatsapp: "https://wa.me/524421694805"
