@@ -6,6 +6,12 @@
                 <span aria-hidden="true"><%= profile.handle %> </span>uptime --all
             </button>
 
+            <% if (profile.contact && profile.contact.cv) { %>
+                <a class="term-btn mono" href="<%= profile.contact.cv %>" target="_blank" rel="noopener noreferrer" aria-label="Download Curriculum Vitae (PDF)">
+                    <i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Download CV
+                </a>
+            <% } %>
+
             <% if (profile.contact.linkedin) { %>
                 <a class="term-btn mono" href="<%= profile.contact.linkedin %>" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">
                     <i class="fa-brands fa-linkedin" aria-hidden="true"></i> LinkedIn

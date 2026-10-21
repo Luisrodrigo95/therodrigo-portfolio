@@ -22,7 +22,8 @@ const profile = {
         email: "contacto@therodrigo.com",
         linkedin: "https://www.linkedin.com/in/luis-rodrigo-garcia-hernandez-43376678",
         phone: "+52 442 169 4805",
-        whatsapp: "https://wa.me/524421694805"
+        whatsapp: "https://wa.me/524421694805",
+        cv: "/CV_Luis_Rodrigo_Garcia_Hernandez.pdf"
     }
 };
 
@@ -37,7 +38,8 @@ const workHistory = [
         bullets: [
             "Provision and monitor client hosting across domains, webspaces, VPS and bare-metal dedicated blades on Proxmox VE hypervisors.",
             "Deploy and fine-tune dedicated game server architectures with SteamCMD, optimizing multi-instance resource allocation.",
-            "Resolve high-level escalations across network, software and hardware layers under strict uptime SLAs."
+            "Analyze packet captures using Wireshark (PCAP) to diagnose false-positive connection drops in PletX DDoS mitigation filters.",
+            "Resolve Tier-1/Tier-2 escalations across network, software and hardware layers under strict uptime SLAs."
         ]
     },
     {
@@ -66,7 +68,7 @@ const workHistory = [
 
 const techStack = {
     languages: ["PowerShell", "Bash", "Node.js", "JavaScript"],
-    networking: ["nftables", "Netplan", "ProFTPD", "Reverse Proxies"],
+    networking: ["nftables", "Netplan", "ProFTPD", "Reverse Proxies", "Wireshark (PCAP)"],
     systems: ["Debian 13 Linux", "Docker Containers", "Proxmox VE / KVM"]
 };
 
@@ -156,6 +158,14 @@ const hubLinks = [
         deepDiveId: "preswin"
     },
     {
+        title: "Local AI Engineering Copilot & Diagnostics Rig",
+        desc: "Dedicated on-premise AI accelerator running Qwen3.8-27B-GGUF locally on 24GB GDDR6 VRAM. Powers rapid full-stack project scaffolding, complex script synthesis, and private daily sysadmin log troubleshooting with zero cloud latency and total data privacy.",
+        icon: "fa-solid fa-brain",
+        href: "#",
+        badge: "LOCAL RIG",
+        deepDiveId: "local-qwen-copilot"
+    },
+    {
         title: "Wiwi Shop — Handmade Boutique",
         desc: "Handmade with love in Mexico: Crochet amigurumis, artisan jewelry, and Cruz Azulito merchandise with interactive feeding station for Memo.",
         icon: "fa-solid fa-cat",
@@ -193,6 +203,8 @@ const techMarquee = [
     { icon: "fa-solid fa-network-wired", label: "nftables" },
     { icon: "fa-solid fa-project-diagram", label: "Netplan" },
     { icon: "fa-solid fa-route", label: "Reverse Proxies" },
+    { icon: "fa-solid fa-brain", label: "Qwen3.8-27B-GGUF" },
+    { icon: "fa-solid fa-microchip", label: "AMD ROCm" },
     { icon: "fa-solid fa-upload", label: "ProFTPD" }
 ];
 
@@ -420,6 +432,95 @@ rrdtool graph - --start -4h --width 600 --height 160 --alt-autoscale-max \\
         ],
         liveUrl: "#fleet",
         liveLabel: "View Fleet Telemetry Live"
+    },
+    {
+        id: "local-qwen-copilot",
+        title: "Local AI Engineering Copilot & Diagnostics Rig",
+        kicker: "On-Premises High-Throughput AI // 24GB VRAM Rig",
+        badge: "LOCAL RIG",
+        badgeClass: "badge-ok",
+        icon: "fa-solid fa-brain",
+        overview: "A dedicated on-premise AI acceleration workstation running Qwen3.8-27B-GGUF directly on bare-metal hardware. Leveraged daily to rapidly scaffold full-stack architectures (like PresWin), generate resilient automation scripts, and triage complex server logs, stack traces, and network anomalies in complete privacy without leaking proprietary client configurations or tokens to external cloud APIs.",
+        specs: [
+            { label: "Hardware Rig", value: "AMD Radeon RX 7900 XTX (24GB GDDR6) + Ryzen 9 7900X3D + 64GB DDR5" },
+            { label: "Inference Engine", value: "Ollama / llama.cpp with AMD ROCm acceleration" },
+            { label: "Model Architecture", value: "Qwen3.8-27B-GGUF (Quantized · ROCm Acceleration)" },
+            { label: "VRAM Allocation", value: "100% GPU Layer Offload (~18.5GB VRAM footprint)" },
+            { label: "Context Window", value: "16,384 – 32,768 tokens (Flash Attention enabled)" },
+            { label: "Generation Speed", value: "~35 – 45 tokens/second sustained throughput" }
+        ],
+        architecture: `[Daily Engineering Workflows & Terminal Sessions]
+               │
+               ▼ (Activity Intent Classification)
+[Dynamic Skill Dispatcher]
+  ├── [Skill: Project_Scaffolding]        ──► Full-Stack Architecture & Data Matrices
+  ├── [Skill: SysAdmin_Log_Triage]        ──► Live Server Error RCFA & Safe Remediation
+  ├── [Skill: Script_Synthesis_Automation]──► Resilient Daemons (Bash, Python, Node.js)
+  └── [Skill: Compliance_Security_Audit]  ──► SPDX License & Vulnerability Scanning
+               │
+               ▼ (Local HTTP / CLI prompt via 127.0.0.1:11434)
+[AMD ROCm + Ollama / llama.cpp Inference Runtime]
+  ├── GPU Offload: 100% Layers resident in 24GB GDDR6 VRAM
+  ├── Model: Qwen3.8-27B-GGUF (Skill-Conditioned High-Precision Synthesis)
+  └── Flash Attention & KV-Cache Offloading (64GB DDR5 fallback)
+               │
+               ▼
+[Immediate Actionable Engineering Output]
+  ├── Verified Code Modules (Powers projects like PresWin & Fleet Monitors)
+  ├── Root Cause Analysis (RCFA) of Linux/Windows Server crashes
+  └── 100% Private: Zero external telemetry, zero API costs, zero data leakage`,
+        snippetTitle: "Local Modelfile & Skill-Based System Prompt",
+        snippetLang: "dockerfile",
+        snippet: `FROM Qwen3.8-27B-GGUF
+
+# High-performance parameter tuning for coding & infrastructure operations
+PARAMETER temperature 0.20
+PARAMETER top_p 0.85
+PARAMETER num_ctx 32768
+PARAMETER stop "<|im_end|>"
+
+SYSTEM """You are an autonomous Senior Systems Engineer & Technical Architect.
+You operate through specialized operational SKILLS. When receiving a prompt, identify the target activity and strictly execute the corresponding skill protocol:
+
+[SKILL: PROJECT_SCAFFOLDING]
+Trigger Activity: Design, architecture, or scaffolding of new software projects, web services, APIs, and database schemas.
+Protocol:
+- Enforce modular domain separation (Controllers, Routes, Data, Views).
+- Output minimal-dependency, production-ready boilerplate (Express, Python, SQLite).
+- Ensure persistent state, graceful startup/shutdown, and structured error boundaries.
+
+[SKILL: SYSADMIN_LOG_TRIAGE]
+Trigger Activity: Diagnostic analysis of server logs, stack traces, Nginx reverse proxy faults, PM2 crashes, or network anomalies.
+Protocol:
+- Execute immediate Root Cause Failure Analysis (RCFA) and isolate the failing component.
+- Deliver a 2-line impact summary followed by exact, non-destructive remediation commands.
+- Never output dangerous wildcard deletes; prioritize log preservation and service continuity.
+
+[SKILL: SCRIPT_SYNTHESIS_AUTOMATION]
+Trigger Activity: Authoring or optimizing automation scripts, cron jobs, and background worker daemons.
+Protocol:
+- In Bash: enforce 'set -euo pipefail', trap signals, and implement idempotent execution.
+- In Python: use strict type hints, robust exception handling, structured JSON logging, and exponential backoff.
+- In PowerShell/Node: utilize non-blocking async streams and proper exit codes.
+
+[SKILL: COMPLIANCE_SECURITY_AUDIT]
+Trigger Activity: Codebase vulnerability inspection, hardcoded secret detection, or open-source license review.
+Protocol:
+- Map software components to SPDX / OpenChain license standards (flagging GPL/AGPL contamination in commercial contexts).
+- Identify hardcoded tokens, insecure system calls, and buffer hazards.
+
+ROUTING RULE:
+For any incoming activity or request:
+1. Detect whether the task is Scaffolding, Log Triage, Automation Scripting, or Compliance Audit.
+2. Activate and follow that designated [SKILL: ...] protocol strictly.
+3. Deliver concise, production-ready code and solutions with zero unnecessary conversational filler."""`,
+        outcomes: [
+            "Accelerates new project scaffolding, boilerplate generation, and schema design by over 60%.",
+            "Enables safe, private triaging of sensitive production server logs and client network configs without third-party NDA violations.",
+            "Eliminates cloud API rate limits, subscriptions, and network latency with instantaneous 40+ tok/s local generation."
+        ],
+        liveUrl: null,
+        liveLabel: null
     }
 ];
 

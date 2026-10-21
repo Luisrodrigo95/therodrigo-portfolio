@@ -3,6 +3,13 @@
         <p class="section-kicker">04 · Career</p>
         <h2 id="career-title">Professional Track Record</h2>
         <p class="section-sub">From industrial maintenance floors to open-source compliance and hosting infrastructure.</p>
+        <% if (profile.contact && profile.contact.cv) { %>
+            <div style="margin-top: 14px;">
+                <a class="term-btn mono" href="<%= profile.contact.cv %>" target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Download Complete CV (PDF)
+                </a>
+            </div>
+        <% } %>
     </div>
 
     <ol class="timeline" id="career-timeline">

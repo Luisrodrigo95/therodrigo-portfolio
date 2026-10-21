@@ -33,51 +33,12 @@
     }
     applyTheme(saved);
 
-    /* ------------------------------------------------------------------
-       Unified passive requestAnimationFrame scroll coordinator
-       Eliminates layout thrashing from multiple scroll listeners.
-       ------------------------------------------------------------------ */
-    var scrollSubscribers = [];
-    var scrollTicking = false;
-
-    function subscribeScroll(fn) {
-        if (typeof fn === 'function') {
-            scrollSubscribers.push(fn);
-        }
-    }
-
-    function dispatchScroll() {
-        if (scrollTicking) return;
-        scrollTicking = true;
-        requestAnimationFrame(function () {
-            scrollTicking = false;
-            for (var i = 0; i < scrollSubscribers.length; i++) {
-                try {
-                    scrollSubscribers[i]();
-                } catch (e) {
-                    console.error('Scroll subscriber error:', e);
-                }
-            }
-        });
-    }
-
-    window.addEventListener('scroll', dispatchScroll, { passive: true });
-    window.addEventListener('resize', dispatchScroll, { passive: true });
-
     themeButtons.forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-            var isCurrent = btn.getAttribute('aria-pressed') === 'true';
-            if (themePill && themePill.classList.contains('is-compact') && !themePill.classList.contains('is-expanded') && isCurrent) {
-                // Tap on active swatch while compact -> expand so user can choose other themes
-                e.stopPropagation();
-                themePill.classList.add('is-expanded');
-                return;
-            }
+        btn.addEventListener('click', function () {
             applyTheme(btn.dataset.themeId);
             hasSelectedFirstColor = true;
             wasScrolledDown = window.scrollY > 35;
             if (themePill) {
-                themePill.classList.remove('is-expanded');
                 themePill.classList.add('is-compact', 'just-selected');
             }
         });
@@ -87,23 +48,9 @@
         themePill.addEventListener('mouseleave', function () {
             themePill.classList.remove('just-selected');
         });
-
-        // Mobile touch toggle: tapping compact pill expands swatches
-        themePill.addEventListener('click', function (e) {
-            if (themePill.classList.contains('is-compact') && !e.target.closest('.theme-btn')) {
-                themePill.classList.toggle('is-expanded');
-            }
-        });
-
-        // Click outside collapses expanded theme pill
-        document.addEventListener('click', function (e) {
-            if (!themePill.contains(e.target)) {
-                themePill.classList.remove('is-expanded');
-            }
-        });
     }
 
-    function updateThemePillScroll() {
+    window.addEventListener('scroll', function () {
         if (!themePill || !hasSelectedFirstColor) return;
         var y = window.scrollY || window.pageYOffset || 0;
         if (y > 35) {
@@ -113,10 +60,9 @@
             }
         } else if (y <= 15 && wasScrolledDown) {
             wasScrolledDown = false;
-            themePill.classList.remove('is-compact', 'just-selected', 'is-expanded');
+            themePill.classList.remove('is-compact', 'just-selected');
         }
-    }
-    subscribeScroll(updateThemePillScroll);
+    }, { passive: true });
 
     /* ------------------------------------------------------------------
        Discount-code copy buttons
@@ -397,12 +343,10 @@
         });
     }
 
-    // Initial load + 60s auto-refresh (paused when page is hidden)
+    // Initial load + 60s auto-refresh
     refreshFleetTelemetry('4h', false);
     setInterval(function () {
-        if (!document.hidden) {
-            refreshFleetTelemetry(currentRrdRange, false);
-        }
+        refreshFleetTelemetry(currentRrdRange, false);
     }, 60000);
 
     /* ------------------------------------------------------------------
@@ -669,7 +613,15 @@
             });
         }
 
-        subscribeScroll(update);
+        var ticking = false;
+        function onScroll() {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(function () { ticking = false; update(); });
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
         update();
     })();
 
@@ -776,53 +728,83 @@
        ------------------------------------------------------------------ */
     var STINGRAY_SVG = '<svg viewBox="0 0 280 200" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" class="manta-svg-root" aria-hidden="true">' +
         '<defs>' +
-        '  <linearGradient id="mantaWingGradNear" x1="140" y1="90" x2="105" y2="180" gradientUnits="userSpaceOnUse">' +
-        '    <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.32"/>' +
-        '    <stop offset="60%" stop-color="var(--accent)" stop-opacity="0.15"/>' +
-        '    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.04"/>' +
+        '  <linearGradient id="mantaFuselageGrad" x1="185" y1="90" x2="70" y2="105" gradientUnits="userSpaceOnUse">' +
+        '    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>' +
+        '    <stop offset="35%" stop-color="#e2e8f0" stop-opacity="0.88"/>' +
+        '    <stop offset="70%" stop-color="#94a3b8" stop-opacity="0.65"/>' +
+        '    <stop offset="100%" stop-color="#475569" stop-opacity="0.5"/>' +
         '  </linearGradient>' +
-        '  <linearGradient id="mantaWingGradFar" x1="140" y1="80" x2="115" y2="20" gradientUnits="userSpaceOnUse">' +
-        '    <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.22"/>' +
-        '    <stop offset="60%" stop-color="var(--accent)" stop-opacity="0.10"/>' +
-        '    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.02"/>' +
+        '  <linearGradient id="mantaFuselageSpecular" x1="180" y1="88" x2="130" y2="100" gradientUnits="userSpaceOnUse">' +
+        '    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7"/>' +
+        '    <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>' +
+        '  </linearGradient>' +
+        '  <linearGradient id="mantaWingGradNear" x1="150" y1="95" x2="100" y2="185" gradientUnits="userSpaceOnUse">' +
+        '    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.45"/>' +
+        '    <stop offset="50%" stop-color="#0ea5e9" stop-opacity="0.24"/>' +
+        '    <stop offset="85%" stop-color="#10b981" stop-opacity="0.14"/>' +
+        '    <stop offset="100%" stop-color="#059669" stop-opacity="0.04"/>' +
+        '  </linearGradient>' +
+        '  <linearGradient id="mantaWingGradFar" x1="145" y1="82" x2="110" y2="18" gradientUnits="userSpaceOnUse">' +
+        '    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.36"/>' +
+        '    <stop offset="50%" stop-color="#0284c7" stop-opacity="0.18"/>' +
+        '    <stop offset="85%" stop-color="#059669" stop-opacity="0.09"/>' +
+        '    <stop offset="100%" stop-color="#047857" stop-opacity="0.03"/>' +
         '  </linearGradient>' +
         '</defs>' +
         '<!-- Far Wing (Upper / Background in 3/4 perspective) -->' +
         '<g class="manta-wing-far">' +
-        '  <path d="M152 83 C145 65 130 38 115 22 C105 32 95 60 76 96 C98 94 130 89 152 83 Z" fill="url(#mantaWingGradFar)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />' +
-        '  <path d="M142 75 L125 35 M130 80 L110 46 M115 85 L98 58 M100 89 L86 72" stroke="currentColor" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round" />' +
+        '  <path d="M154 83 C146 64 130 36 114 20 C103 31 92 60 74 96 C98 94 132 89 154 83 Z" fill="url(#mantaWingGradFar)" stroke="#38bdf8" stroke-width="1.6" stroke-linejoin="round" />' +
+        '  <path class="manta-circuit-trace manta-data-pulse-1" d="M142 81 L128 58 L122 58 L112 36 L114 22" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />' +
+        '  <path class="manta-circuit-trace manta-data-pulse-2" d="M130 83 L120 70 L108 70 L98 52" stroke="#10b981" stroke-width="1.1" stroke-linecap="round" />' +
+        '  <path class="manta-circuit-trace" d="M116 86 L108 78 L94 78" stroke="#38bdf8" stroke-width="0.9" stroke-opacity="0.6" stroke-linecap="round" />' +
+        '  <circle cx="114" cy="22" r="2.2" fill="#38bdf8" />' +
+        '  <circle cx="98" cy="52" r="1.8" fill="#10b981" />' +
+        '  <circle cx="94" cy="78" r="1.6" fill="#38bdf8" />' +
         '</g>' +
         '<!-- Main Fusiform Body & Head Core (pitching & heaving with the swim stroke) -->' +
         '<g class="manta-body-core">' +
-        '  <path d="M185 96 C175 86 155 83 130 85 C105 87 85 96 74 105 C85 110 115 111 142 109 C168 107 182 102 185 96 Z" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.8" />' +
+        '  <path d="M188 95 C178 84 156 81 128 84 C102 86 82 95 72 105 C83 111 114 112 142 110 C170 108 185 102 188 95 Z" fill="url(#mantaFuselageGrad)" stroke="#f8fafc" stroke-width="1.8" />' +
+        '  <path d="M182 94 C168 86 142 85 120 89 C104 92 88 98 80 103 C96 101 122 97 146 96 C168 95 178 94 182 94 Z" fill="url(#mantaFuselageSpecular)" />' +
         '  <!-- Cephalic Horns (Rostrum in 3D profile) -->' +
-        '  <path d="M178 90 C184 86 193 85 190 92 C188 95 182 94 179 92" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" />' +
-        '  <path d="M182 99 C190 102 198 104 195 110 C191 113 185 108 182 102" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" />' +
+        '  <path d="M180 88 C188 83 198 83 195 91 C192 95 184 94 180 91" fill="#f1f5f9" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round" />' +
+        '  <path d="M184 98 C193 102 201 105 198 112 C193 115 186 110 183 103" fill="#f1f5f9" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round" />' +
         '  <!-- Optic Sensory Eye -->' +
-        '  <circle cx="172" cy="94" r="2.8" fill="#38bdf8" />' +
-        '  <circle cx="172" cy="94" r="5" stroke="#38bdf8" stroke-width="0.8" stroke-opacity="0.6" />' +
+        '  <circle cx="174" cy="93" r="2.8" fill="#38bdf8" />' +
+        '  <circle cx="174" cy="93" r="5.2" stroke="#38bdf8" stroke-width="0.8" stroke-opacity="0.6" stroke-dasharray="2 2" />' +
         '  <!-- Luminous Ventral Telemetry Gills -->' +
-        '  <line x1="160" y1="102" x2="160" y2="106" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" />' +
-        '  <line x1="154" y1="103" x2="154" y2="107" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" />' +
-        '  <line x1="148" y1="104" x2="148" y2="108" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" />' +
-        '  <!-- Dorsal Spinal Ridge with cyber nodes -->' +
-        '  <path d="M175 92 C150 88 120 90 76 104" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-opacity="0.85" />' +
-        '  <circle cx="145" cy="90" r="2" fill="#22c55e" />' +
-        '  <circle cx="118" cy="94" r="2" fill="#38bdf8" />' +
-        '  <circle cx="95" cy="99" r="2" fill="#22c55e" />' +
+        '  <line x1="162" y1="102" x2="162" y2="107" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" />' +
+        '  <line x1="156" y1="103" x2="156" y2="108" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" />' +
+        '  <line x1="150" y1="104" x2="150" y2="109" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" />' +
+        '  <line x1="144" y1="105" x2="144" y2="110" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" />' +
+        '  <!-- Dorsal Spinal Ridge with cyber nodes & Debian Red heartbeat core -->' +
+        '  <path d="M178 91 C152 87 122 89 74 104" stroke="#0ea5e9" stroke-width="2.6" stroke-linecap="round" stroke-opacity="0.9" />' +
+        '  <path d="M178 91 C152 87 122 89 74 104" stroke="#ffffff" stroke-width="1" stroke-linecap="round" stroke-opacity="0.95" />' +
+        '  <circle cx="152" cy="89" r="3.4" fill="#e11d48" class="manta-heart-core" />' +
+        '  <circle cx="132" cy="91" r="2.6" fill="#10b981" class="manta-node-pulse" />' +
+        '  <circle cx="112" cy="94" r="2.6" fill="#38bdf8" class="manta-node-pulse" />' +
+        '  <circle cx="92" cy="99" r="2.4" fill="#10b981" class="manta-node-pulse" />' +
         '  <!-- Whip Tail (Ribbon undulation) -->' +
         '  <g class="manta-tail-whip">' +
-        '    <path d="M74 105 C55 109 35 119 8 116" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />' +
-        '    <circle cx="8" cy="116" r="2" fill="currentColor" />' +
+        '    <path d="M72 105 C54 109 34 119 6 116" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" />' +
+        '    <path d="M72 105 C54 109 34 119 6 116" stroke="#38bdf8" stroke-width="0.9" stroke-dasharray="3 4" />' +
+        '    <circle cx="6" cy="116" r="2.8" fill="#38bdf8" class="manta-tail-emitter" />' +
+        '    <circle cx="6" cy="116" r="5.5" stroke="#38bdf8" stroke-width="0.8" stroke-opacity="0.7" class="manta-tail-ring" />' +
         '  </g>' +
         '</g>' +
         '<!-- Near Wing (Foreground / Downward sweeping in 3/4 perspective) -->' +
         '<g class="manta-wing-near">' +
-        '  <path d="M158 98 C148 118 132 155 105 178 C95 165 86 138 78 108 C102 108 132 104 158 98 Z" fill="url(#mantaWingGradNear)" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />' +
-        '  <path d="M148 106 L118 160 M134 107 L105 146 M118 108 L95 132 M102 108 L86 122" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.5" stroke-linecap="round" />' +
-        '  <circle cx="105" cy="178" r="2.5" fill="#38bdf8" />' +
+        '  <path d="M160 98 C150 119 133 158 104 182 C93 168 84 139 76 108 C102 108 133 104 160 98 Z" fill="url(#mantaWingGradNear)" stroke="#38bdf8" stroke-width="1.8" stroke-linejoin="round" />' +
+        '  <path class="manta-circuit-trace manta-data-pulse-1" d="M148 106 L130 134 L120 134 L108 166 L104 180" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />' +
+        '  <path class="manta-circuit-trace manta-data-pulse-2" d="M136 107 L124 126 L112 126 L100 148 L92 148" stroke="#10b981" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />' +
+        '  <path class="manta-circuit-trace manta-data-pulse-1" d="M120 108 L108 122 L98 122 L90 134" stroke="#38bdf8" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />' +
+        '  <path class="manta-circuit-trace" d="M104 108 L94 116 L84 116" stroke="#0ea5e9" stroke-width="0.9" stroke-opacity="0.6" stroke-linecap="round" />' +
+        '  <rect x="117" y="131" width="5" height="5" rx="1" fill="#0f172a" stroke="#38bdf8" stroke-width="0.8" />' +
+        '  <rect x="109" y="123" width="5" height="5" rx="1" fill="#0f172a" stroke="#10b981" stroke-width="0.8" />' +
+        '  <circle cx="104" cy="180" r="3" fill="#38bdf8" />' +
+        '  <circle cx="92" cy="148" r="2.2" fill="#10b981" />' +
+        '  <circle cx="90" cy="134" r="1.8" fill="#38bdf8" />' +
         '</g>' +
-    '</svg>';
+        '</svg>';
 
     function spawnMantaSwarm(count) {
         var swarmContainer = document.getElementById('manta-swarm');
@@ -892,7 +874,6 @@
         if (!hudStatEl && !termStatEl && !navStatEl) return;
 
         function updateTicker() {
-            if (document.hidden) return;
             var ms = (Math.random() * 0.45 + 0.65).toFixed(1);
             if (hudStatEl) hudStatEl.textContent = ms + 'ms';
             if (termStatEl) termStatEl.innerHTML = '<i class="fa-solid fa-bolt" aria-hidden="true"></i> ' + ms + 'ms';
@@ -993,6 +974,14 @@
             }
         }
 
+        if (termScreen && termInput) {
+            termScreen.addEventListener('click', function (e) {
+                if (e.target !== termInput && !e.target.closest('button') && !e.target.closest('a')) {
+                    termInput.focus();
+                }
+            });
+        }
+
         function appendLine(content, className) {
             var div = document.createElement('div');
             div.className = 'term-line ' + (className || '');
@@ -1080,6 +1069,8 @@
                         '  cve            -> Latest actively exploited vulnerabilities (CISA KEV)\n' +
                         '  pm2            -> Live local PM2 & systemd daemon process list\n' +
                         '  projects       -> Active web applications & architectural writeups\n' +
+                        '  qwen           -> Local 24GB VRAM AI rig (Qwen3.8-27B-GGUF) & copilot specs\n' +
+                        '  cv             -> Download / view verified Curriculum Vitae (PDF)\n' +
                         '  uptime         -> Real execution of `uptime -p` on the live Debian VPS\n' +
                         '  htop           -> Live kernel vCPU, RAM & process monitor (safe mode)\n' +
                         '  ping [target]  -> Probe ICMP latency and packet round-trip time\n' +
@@ -1159,11 +1150,48 @@
                         'DEPLOYED PLATFORMS & LAB WRITE-UPS:\n' +
                         '  1. Technical Inspection Suite (/technical-inspection) -> Plant Reliability, Punch List & CAM [LIVE]\n' +
                         '  2. PresWin (/preswin)                     -> Construction Cost Estimator [LIVE]\n' +
-                        '  3. Appointment Checker (/Appointment_Checker) -> Autonomous slot poller [LIVE]\n' +
-                        '  4. Fleet Telemetry (#fleet)               -> Smokeping RRD monitors [LIVE]\n' +
+                        '  3. Local AI Copilot Rig (Qwen3.8-27B-GGUF) -> Private 24GB VRAM Code & Log Triage [LOCAL RIG]\n' +
+                        '  4. Appointment Checker (/Appointment_Checker) -> Autonomous slot poller [LIVE]\n' +
+                        '  5. Fleet Telemetry (#fleet)               -> Smokeping RRD monitors [LIVE]\n' +
                         '\nTip: Click "Technical Deep Dive" on any card below for the full write-up & topology.',
                         'accent'
                     );
+                    break;
+
+                case 'qwen':
+                case 'ai':
+                case 'llm':
+                    appendOutput(
+                        'LOCAL HIGH-THROUGHPUT AI RIG (Qwen3.8-27B-GGUF):\n' +
+                        '  Host Hardware : AMD Ryzen 9 7900X3D (12c/24t) · 64 GB DDR5 RAM\n' +
+                        '  GPU Engine    : AMD Radeon RX 7900 XTX (24 GB GDDR6 VRAM)\n' +
+                        '  Inference Core: Ollama / llama.cpp (AMD ROCm Acceleration)\n' +
+                        '  Target Model  : Qwen3.8-27B-GGUF (100% VRAM Layer Offload)\n' +
+                        '  Context Window: 32,768 tokens (Flash Attention enabled)\n' +
+                        '  Throughput    : ~35–45 tokens/second sustained speed\n' +
+                        '  Architecture  : Dynamic Skill-Based Agentic Dispatcher\n' +
+                        '  Active Skills : • [Project_Scaffolding]         -> Full-Stack Architecture & Data Matrices\n' +
+                        '                  • [SysAdmin_Log_Triage]         -> Production Log RCFA & Safe Remediation\n' +
+                        '                  • [Script_Synthesis_Automation] -> Resilient Bash/Python/Node Daemons\n' +
+                        '                  • [Compliance_Security_Audit]   -> SPDX License & Vulnerability Scanning\n' +
+                        '  Routing Rule  : Evaluates target activity and strictly follows designated skill protocol.\n' +
+                        '\nTip: Click "Technical Deep Dive" on the Local AI card in 05 · Wins & Projects to inspect the Modelfile.',
+                        'accent'
+                    );
+                    break;
+
+                case 'cv':
+                case 'resume':
+                    appendOutput(
+                        'CURRICULUM VITAE — LUIS RODRIGO GARCÍA HERNÁNDEZ:\n' +
+                        '  Role      : Technical Support Specialist & Infrastructure Engineer\n' +
+                        '  Education : B.S. ITESM (Tec de Monterrey)\n' +
+                        '  Core Focus: Linux Sysadmin · Proxmox VE · Open-Source License Compliance · Server Tuning\n' +
+                        '  Document  : Opening verified PDF (/CV_Luis_Rodrigo_Garcia_Hernandez.pdf) in a new tab...',
+                        'accent'
+                    );
+                    try { window.open('/CV_Luis_Rodrigo_Garcia_Hernandez.pdf', '_blank'); } catch (e) {}
+                    showToast('Opening Curriculum Vitae (PDF)...', 'fa-solid fa-file-pdf', 3000);
                     break;
 
                 case 'uptime':
@@ -1670,7 +1698,16 @@
             }
         }
 
-        subscribeScroll(updateProgress);
+        var ticking = false;
+        window.addEventListener('scroll', function () {
+            if (!ticking) {
+                requestAnimationFrame(function () {
+                    ticking = false;
+                    updateProgress();
+                });
+                ticking = true;
+            }
+        }, { passive: true });
 
         btn.addEventListener('click', function () {
             window.scrollTo({
@@ -2535,22 +2572,5 @@
         setInterval(function () {
             if (!document.hidden) fetchSecOpsTelemetry(false);
         }, 60000);
-
-        // Re-sync stale telemetry when user returns to the tab after >30s in background
-        var lastVisibilityRefresh = Date.now();
-        document.addEventListener('visibilitychange', function () {
-            if (!document.hidden) {
-                var now = Date.now();
-                if (now - lastVisibilityRefresh > 30000) {
-                    lastVisibilityRefresh = now;
-                    if (typeof refreshFleetTelemetry === 'function') {
-                        refreshFleetTelemetry(currentRrdRange, false);
-                    }
-                    if (typeof fetchSecOpsTelemetry === 'function') {
-                        fetchSecOpsTelemetry(false);
-                    }
-                }
-            }
-        });
     });
 })();
