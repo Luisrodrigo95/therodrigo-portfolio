@@ -1070,7 +1070,6 @@
                         '  pm2            -> Live local PM2 & systemd daemon process list\n' +
                         '  projects       -> Active web applications & architectural writeups\n' +
                         '  qwen           -> Local 24GB VRAM AI rig (Qwen3.8-27B-GGUF) & copilot specs\n' +
-                        '  cv             -> Download / view verified Curriculum Vitae (PDF)\n' +
                         '  uptime         -> Real execution of `uptime -p` on the live Debian VPS\n' +
                         '  htop           -> Live kernel vCPU, RAM & process monitor (safe mode)\n' +
                         '  ping [target]  -> Probe ICMP latency and packet round-trip time\n' +
@@ -1178,20 +1177,6 @@
                         '\nTip: Click "Technical Deep Dive" on the Local AI card in 05 · Wins & Projects to inspect the Modelfile.',
                         'accent'
                     );
-                    break;
-
-                case 'cv':
-                case 'resume':
-                    appendOutput(
-                        'CURRICULUM VITAE — LUIS RODRIGO GARCÍA HERNÁNDEZ:\n' +
-                        '  Role      : Technical Support Specialist & Infrastructure Engineer\n' +
-                        '  Education : B.S. ITESM (Tec de Monterrey)\n' +
-                        '  Core Focus: Linux Sysadmin · Proxmox VE · Open-Source License Compliance · Server Tuning\n' +
-                        '  Document  : Opening verified PDF (/CV_Luis_Rodrigo_Garcia_Hernandez.pdf) in a new tab...',
-                        'accent'
-                    );
-                    try { window.open('/CV_Luis_Rodrigo_Garcia_Hernandez.pdf', '_blank'); } catch (e) {}
-                    showToast('Opening Curriculum Vitae (PDF)...', 'fa-solid fa-file-pdf', 3000);
                     break;
 
                 case 'uptime':

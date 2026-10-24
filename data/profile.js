@@ -22,8 +22,7 @@ const profile = {
         email: "contacto@therodrigo.com",
         linkedin: "https://www.linkedin.com/in/luis-rodrigo-garcia-hernandez-43376678",
         phone: "+52 442 169 4805",
-        whatsapp: "https://wa.me/524421694805",
-        cv: "/CV_Luis_Rodrigo_Garcia_Hernandez.pdf"
+        whatsapp: "https://wa.me/524421694805"
     }
 };
 
@@ -38,8 +37,9 @@ const workHistory = [
         bullets: [
             "Provision and monitor client hosting across domains, webspaces, VPS and bare-metal dedicated blades on Proxmox VE hypervisors.",
             "Deploy and fine-tune dedicated game server architectures with SteamCMD, optimizing multi-instance resource allocation.",
+            "Configure Nginx reverse proxies, SSL certificates, and secure SFTP/FTPS file transfers with PGP/GPG encryption.",
             "Analyze packet captures using Wireshark (PCAP) to diagnose false-positive connection drops in PletX DDoS mitigation filters.",
-            "Resolve Tier-1/Tier-2 escalations across network, software and hardware layers under strict uptime SLAs."
+            "Deliver Tier-1/Tier-2 Application Support and infrastructure troubleshooting adhering to ITIL operational processes under strict SLAs."
         ]
     },
     {
@@ -49,8 +49,9 @@ const workHistory = [
         location: "Querétaro, MX",
         bullets: [
             "Audited enterprise software for open-source license compliance with FOSSology, Black Duck Hub and SPDX.",
-            "Built Bash/Python automation with error-handling and logging; maintained API integrations between compliance tools and internal platforms.",
-            "Administered Ubuntu servers and contributed to an internal AWS (S3, EC2, RDS) web tool for audit and compliance workflows."
+            "Built Bash/Python automation and API integrations; automated batch workloads with Autosys and Control-M.",
+            "Administered Unix/Linux servers and contributed to an internal AWS (S3, EC2, RDS) web tool for compliance workflows.",
+            "Managed sprint planning, backlogs, and ceremonies in Jira as Scrum Master to increase delivery predictability."
         ]
     },
     {
@@ -67,9 +68,9 @@ const workHistory = [
 ];
 
 const techStack = {
-    languages: ["PowerShell", "Bash", "Node.js", "JavaScript"],
-    networking: ["nftables", "Netplan", "ProFTPD", "Reverse Proxies", "Wireshark (PCAP)"],
-    systems: ["Debian 13 Linux", "Docker Containers", "Proxmox VE / KVM"]
+    languages: ["Python", "Bash", "PowerShell", "Node.js", "JavaScript"],
+    networking: ["Nginx", "Wireshark (PCAP)", "PGP/GPG", "SFTP/FTPS", "nftables", "Netplan"],
+    systems: ["Unix/Linux (Debian, Ubuntu)", "Docker Containers", "Proxmox VE / KVM"]
 };
 
 // "What I do" focus cards shown inside 01 · About
